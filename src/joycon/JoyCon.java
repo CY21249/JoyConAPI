@@ -34,6 +34,14 @@ public class JoyCon {
 		datat[10] = 0x3F;
 		this.hid.sendOutputReport(ids, datat);
 
+		// Subcommand 0x40: Enable IMU (6-Axis sensor)
+		// One argument of x00 Disable or x01 Enable.
+		this.hid.sendCommand((byte) 0x01, (byte) 0x40, new byte[] { 0x01 });
+
+		// Subcommand 0x03: Set input report mode
+		// Argument 30: Standard full mode. Pushes current state @60Hz
+		this.hid.sendCommand((byte) 0x01, (byte) 0x03, new byte[] { 0x30 });
+
 		this.hid.addEventListener(new HIDEventListener() {
 			@Override
 			public void onInputReport(ReceivedPacketEvent irEvent) {

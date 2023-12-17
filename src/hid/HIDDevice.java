@@ -13,6 +13,7 @@ public class HIDDevice {
 	public final HIDDeviceInfo info;
 	private final HidDevice pure;
 	private final Set<HIDEventListener> eventListeners = new HashSet<>();
+	private byte lastPacketCount = 0;
 
 	/** レポートを送信する */
 	public void sendOutputReport(byte reportIDs, byte[] data) {
@@ -20,6 +21,17 @@ public class HIDDevice {
 		try {
 			Thread.sleep(16);
 		} catch (InterruptedException e) {}
+	}
+
+	public void sendCommand(byte command, byte subcommand, byte[] argument) {
+		byte[] buff = new byte[argument.length + 3];
+		buff[0] = command;
+		buff[1] = (byte)((++this.lastPacketCount)&0xF);
+		buff[2] = subcommand;
+		for (int i = 0; i < argument.length; i++) {
+			buff[i + 3] = argument[i];
+		}
+		this.sendOutputReport((byte) 0, buff);
 	}
 
 	/** イベントリスナーを登録 */

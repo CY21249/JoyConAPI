@@ -9,7 +9,7 @@ public abstract class JoyConEventListener implements EventListener<JoyConEvent> 
 		if (event instanceof MoveInputEvent)
 			this.onGyroInput((MoveInputEvent) event);
 		else
-			throw new Error("Handler is not found");
+			System.out.println(event);
 	}
 
 	/** ジャイロ値が入力されたときに実行されるハンドラ */
