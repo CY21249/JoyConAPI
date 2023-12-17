@@ -19,4 +19,14 @@ public class StringUtil {
 	public static String slice(String str, int from) {
 		return slice(str, from, str.length());
 	}
+
+	public static String padStart(String str, int length, char fill) {
+		String res = "";
+		for (int i = 0; i < length - str.length(); i++) {
+			res += fill;
+		}
+		res += str;
+
+		return res;
+	}
 }
