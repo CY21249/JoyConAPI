@@ -102,7 +102,7 @@ public class PacketDecorder {
 		}
 
 		return new Vector3D(sum_x, sum_y, sum_z)
-			.times(1.0 / accelerometers.length)
+			.times(1. / accelerometers.length)
 			.times(elapsedTime);
 	}	
 
