@@ -102,7 +102,7 @@ public class PacketDecorder {
 		}
 
 		return new Vector3D(sum_x, sum_y, sum_z)
-			.times(1 / accelerometers.length)
+			.times(1. / accelerometers.length)
 			.times(elapsedTime);
 	}	
 
@@ -187,8 +187,8 @@ public class PacketDecorder {
 			.times(1 / Math.PI);
 
 		EularAngle orientation = target.hand < 0
-			? new EularAngle(-temp.x % (1 / 4), -temp.y, -temp.z)
-			: new EularAngle(temp.x % 1, -temp.y, temp.z);
+			? new EularAngle(-temp.x % (1. / 4), -temp.y, -temp.z)
+			: new EularAngle(temp.x % 1., -temp.y, temp.z);
 
 		this.lastValue = new DecodeOrientationInfo(now, orientation);
 
