@@ -27,20 +27,30 @@ public class JoyCon {
 	}
 
 	private void init() {
-		// ジャイロ入力等の設定をする
-		byte ids = 1;
+		byte ids = 0x01;
+
+		// HIDモードにする
 		byte[] datat = new byte[16];
 		datat[9] = 0x03;
 		datat[10] = 0x3F;
 		this.hid.sendOutputReport(ids, datat);
-
+		// this.hid.sendCommand(ids, 0x01, 0x03, new byte[] { 0x3F });
+		
 		// Subcommand 0x40: Enable IMU (6-Axis sensor)
 		// One argument of x00 Disable or x01 Enable.
-		this.hid.sendCommand((byte) 0x01, (byte) 0x40, new byte[] { 0x01 });
-
+		datat = new byte[16];
+		datat[9] = 0x40;
+		datat[10] = 0x01;
+		this.hid.sendOutputReport(ids, datat);
+		// this.hid.sendCommand(ids, (byte)0x01, (byte) 0x40, new byte[] { 0x01 });
+		
 		// Subcommand 0x03: Set input report mode
 		// Argument 30: Standard full mode. Pushes current state @60Hz
-		this.hid.sendCommand((byte) 0x01, (byte) 0x03, new byte[] { 0x30 });
+		datat = new byte[16];
+		datat[9] = 0x03;
+		datat[10] = 0x30;
+		this.hid.sendOutputReport(ids, datat);
+		// this.hid.sendCommand(ids, (byte)0x01, (byte) 0x03, new byte[] { 0x30 });
 
 		this.hid.addEventListener(new HIDEventListener() {
 			@Override

@@ -23,15 +23,19 @@ public class HIDDevice {
 		} catch (InterruptedException e) {}
 	}
 
-	public void sendCommand(byte command, byte subcommand, byte[] argument) {
-		byte[] buff = new byte[argument.length + 3];
-		buff[0] = command;
-		buff[1] = (byte)((++this.lastPacketCount)&0xF);
-		buff[2] = subcommand;
-		for (int i = 0; i < argument.length; i++) {
-			buff[i + 3] = argument[i];
-		}
-		this.sendOutputReport((byte) 0, buff);
+	public void sendCommand(byte ids, byte command, byte subcommand, byte[] argument) {
+		byte[] headers = new byte[] {
+			command,
+			(byte)((++this.lastPacketCount)&0xF),
+			0x00, 0x01, 0x40, 0x40, 0x00, 0x01, 0x40, 0x40,
+			subcommand
+		};
+		byte[] buff = new byte[headers.length + argument.length];
+		for (int i = 0; i < headers.length; i++)
+			buff[i] = argument[i];
+		for (int i = 0; i < argument.length; i++)
+			buff[i + headers.length] = argument[i];
+		this.sendOutputReport(ids, buff);
 	}
 
 	/** イベントリスナーを登録 */
