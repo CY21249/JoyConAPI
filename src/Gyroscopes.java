@@ -1,6 +1,6 @@
-package joycon;
 
-import joycon.angle.*;
+
+import angle.*;
 
 public class Gyroscopes {
 	

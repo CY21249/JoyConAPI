@@ -5,6 +5,7 @@ import java.util.*;
 
 import hid.util.PureHidApiUtil;
 import purejavahidapi.*;
+import util.BitUtil;
 
 public class HIDDevice {
 	private static final Map<String, HIDDevice> instances = new HashMap<>();
@@ -26,15 +27,11 @@ public class HIDDevice {
 	public void sendCommand(byte ids, byte command, byte subcommand, byte[] argument) {
 		byte[] headers = new byte[] {
 			command,
-			(byte)((++this.lastPacketCount)&0xF),
-			0x00, 0x01, 0x40, 0x40, 0x00, 0x01, 0x40, 0x40,
+			// (byte)((++this.lastPacketCount)&0xF),
+			0x00, 0x010, 0x40, 0x40, 0x00, 0x01, 0x40, 0x40,
 			subcommand
 		};
-		byte[] buff = new byte[headers.length + argument.length];
-		for (int i = 0; i < headers.length; i++)
-			buff[i] = argument[i];
-		for (int i = 0; i < argument.length; i++)
-			buff[i + headers.length] = argument[i];
+		byte[] buff = BitUtil.concat(headers, argument);
 		this.sendOutputReport(ids, buff);
 	}
 

@@ -1,4 +1,4 @@
-package joycon;
+
 
 import java.util.*;
 
@@ -15,6 +15,7 @@ public class JoyCon {
 	public final int hand;
 	private final HIDDevice hid;
 	private final Set<JoyConEventListener> eventListeners = new HashSet<>();
+	private final PacketDecorder packetDecorder = new PacketDecorder();
 	// public final Button buttons = new Buttons();
 
 	JoyCon(String deviceID, HIDDevice hid) {
@@ -30,27 +31,27 @@ public class JoyCon {
 		byte ids = 0x01;
 
 		// HIDモードにする
-		byte[] datat = new byte[16];
-		datat[9] = 0x03;
-		datat[10] = 0x3F;
-		this.hid.sendOutputReport(ids, datat);
-		// this.hid.sendCommand(ids, 0x01, 0x03, new byte[] { 0x3F });
+		// byte[] datat = new byte[16];
+		// datat[9] = 0x03;
+		// datat[10] = 0x3F;
+		// this.hid.sendOutputReport(ids, datat);
+		this.hid.sendCommand(ids, (byte) 0x01, (byte) 0x03, new byte[] { 0x3F });
 		
 		// Subcommand 0x40: Enable IMU (6-Axis sensor)
 		// One argument of x00 Disable or x01 Enable.
-		datat = new byte[16];
-		datat[9] = 0x40;
-		datat[10] = 0x01;
-		this.hid.sendOutputReport(ids, datat);
-		// this.hid.sendCommand(ids, (byte)0x01, (byte) 0x40, new byte[] { 0x01 });
+		// datat = new byte[16];
+		// datat[9] = 0x40;
+		// datat[10] = 0x01;
+		// this.hid.sendOutputReport(ids, datat);
+		this.hid.sendCommand(ids, (byte)0x01, (byte) 0x40, new byte[] { 0x01 });
 		
 		// Subcommand 0x03: Set input report mode
 		// Argument 30: Standard full mode. Pushes current state @60Hz
-		datat = new byte[16];
-		datat[9] = 0x03;
-		datat[10] = 0x30;
-		this.hid.sendOutputReport(ids, datat);
-		// this.hid.sendCommand(ids, (byte)0x01, (byte) 0x03, new byte[] { 0x30 });
+		// datat = new byte[16];
+		// datat[9] = 0x03;
+		// datat[10] = 0x30;
+		// this.hid.sendOutputReport(ids, datat);
+		this.hid.sendCommand(ids, (byte)0x01, (byte) 0x03, new byte[] { 0x30 });
 
 		this.hid.addEventListener(new HIDEventListener() {
 			@Override
@@ -59,7 +60,7 @@ public class JoyCon {
 				// イベントを解釈
 				Packet packet = irEvent.data;
 
-				JoyConInputReport inputReport = new PacketDecorder().decode(target, packet);
+				JoyConInputReport inputReport = target.packetDecorder.decode(target, packet);
 
 				JoyConEvent event = null;
 				if (inputReport instanceof MoveInfoInputReport) {

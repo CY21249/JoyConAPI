@@ -1,4 +1,4 @@
-package joycon;
+
 
 import event.EventListener;
 
@@ -8,8 +8,8 @@ public abstract class JoyConEventListener implements EventListener<JoyConEvent> 
 	public void dispatchEvent(JoyConEvent event) {
 		if (event instanceof MoveInputEvent)
 			this.onGyroInput((MoveInputEvent) event);
-		else
-			System.out.println(event);
+		// else
+		// 	System.out.println(event);
 	}
 
 	/** ジャイロ値が入力されたときに実行されるハンドラ */

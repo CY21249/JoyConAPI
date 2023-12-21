@@ -1,4 +1,4 @@
-package joycon;
+
 
 public class Button {
 	static {

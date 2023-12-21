@@ -1,4 +1,4 @@
-package joycon.vector;
+package vector;
 
 public class Vector3D {
 	public final double x;

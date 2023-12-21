@@ -1,4 +1,4 @@
-package joycon;
+
 
 /** ジャイロ値が入力されたことを表すイベント */
 public class MoveInputEvent extends JoyConEvent<MoveInfoInputReport> {

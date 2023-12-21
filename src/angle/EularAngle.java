@@ -1,4 +1,4 @@
-package joycon.angle;
+package angle;
 
 /**
  * Roll-Pitch-Yaw角 (ZYXオイラー角) を表すクラス

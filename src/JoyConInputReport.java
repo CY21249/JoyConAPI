@@ -1,4 +1,4 @@
-package joycon;
+
 
 public class JoyConInputReport {
 	public final byte reportID;

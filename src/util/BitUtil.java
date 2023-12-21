@@ -1,6 +1,10 @@
 package util;
 
 public class BitUtil {
+	public static void main(String[] args) {
+		System.out.println(BitUtil.toInt16(new byte[] { -54, -11 }, 0, true));
+	}
+
 	private BitUtil() {}
 
 	public static boolean isBitON(int flags, int index) {
@@ -20,33 +24,50 @@ public class BitUtil {
 	}
 
 	public static int toNumber(byte[] data, int from, int to, boolean isLittleEndian) {
+		byte[] dataSliced = slice(data, from, to);
 		if (isLittleEndian)
-			return toNumberLE(data, from, to);
+			dataSliced = reverse(dataSliced);
 
-		int res = 0;
+		byte first = dataSliced[0];
+		// 先頭 bit が 1 だったら負、全bitを反転する
+		int sign = (first & 0x80) != 0 ? -1 : 1;
+		int res = sign < 0 ? ~first : first;
 
-		for (int i = from; i < to; i++) {
-			byte val = data[i];
+		for (int i = 1; i < dataSliced.length; i++) {
+			int val = sign < 0 ? ~dataSliced[i] : dataSliced[i];
 			res *= 256;
 			res += val < 0 ? val + 256 : val;
 		}
 
-		return res;
+		return sign < 0 ? ~res : res;
 	}
 
-	private static int toNumberLE(byte[] leData, int from, int to) {
-		int res = 0;
-
-		// A_B_C -> [C, B, A]
-		// (A * b + B) * b + C
-		for (int i = to - 1; i >= from; i--) {
-			byte val = leData[i];
-			res *= 256;
-			res += val < 0 ? val + 256 : val;
-		}
+	private static byte[] reverse(byte[] arr) {
+		byte[] res = new byte[arr.length];
+		
+		for (int i = 0; i < arr.length; i++)
+			res[arr.length - 1 - i] = arr[i];
 
 		return res;
 	}
 
+	public static byte[] concat(byte[] arr1, byte[] arr2) {
+		byte[] res = new byte[arr1.length + arr2.length];
 
+		for (int i = 0; i < arr1.length; i++)
+			res[i] = arr1[i];
+		for (int i = 0; i < arr2.length; i++)
+			res[i + arr1.length] = arr2[i];
+		return res;
+	}
+
+	private static byte[] slice(byte[] arr, int from, int to) {
+		int length = to - from;
+		byte[] res = new byte[length];
+
+		for (int i = 0; i < length; i++)
+			res[i] = arr[i + from];
+		
+		return res;
+	}
 }

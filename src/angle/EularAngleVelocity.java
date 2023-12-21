@@ -1,4 +1,4 @@
-package joycon.angle;
+package angle;
 
 public class EularAngleVelocity {
 	// 値は rps (回毎秒: 1秒間に何回回転するか)

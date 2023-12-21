@@ -1,9 +1,9 @@
-package joycon;
+
 
 import java.time.*;
 import hid.Packet;
-import joycon.angle.*;
-import joycon.vector.*;
+import angle.*;
+import vector.*;
 import util.BitUtil;
 
 public class PacketDecorder {
@@ -48,28 +48,32 @@ public class PacketDecorder {
 	}
 
 	private MoveInfoInputReport decodeMoveInfo(JoyCon target, Packet packet, BasicInfoInputReport basicInfo) {
-		Vector3D[] accelerometers = this.parseAccelerometers(packet);
-		Vector3D accelerometer = this.parseActualAccelerometer(accelerometers);
+		Vector3D[] accelerations = this.parseAccelerometers(packet);
+		Vector3D acceleration = this.parseActualAccelerometer(accelerations);
 
-		EularAngleVelocity[] gyroscopes = this.parseGyroscopes(packet);
-		EularAngleVelocity gyroscope = this.calculateActualGyroscope(gyroscopes);
-		EularAngle orientation = this.toOrientation(target, gyroscope, accelerometer);
-		return new MoveInfoInputReport(basicInfo, gyroscope, orientation);
+		EularAngleVelocity[] angleVelocities = this.parseGyroscopes(packet);
+		EularAngleVelocity angleVelocity = this.calculateActualGyroscope(angleVelocities);
+
+		EularAngle orientation = this.toOrientation(target, angleVelocity, acceleration);
+
+		return new MoveInfoInputReport(basicInfo, acceleration, angleVelocity, orientation);
 	}
 
 	/**
 	 * 参考: parse.js:368 parseAccelerometers,
 	 * 	https://github.com/dekuNukem/Nintendo_Switch_Reverse_Engineering/blob/master/imu_sensor_notes.md#accelerometer---acceleration-in-g
+	 * @returns {Vector3D} Acceleration 
 	 */
 	private Vector3D[] parseAccelerometers(Packet packet) {
 		return new Vector3D[] {
-			this.toAccelerometer(packet.data, 13),
-			this.toAccelerometer(packet.data, 25),
-			this.toAccelerometer(packet.data, 37)
+			// packet.data (: byte[]) は index 0 に report id を含めないため、上記 GitHub の表の値の1つ手前としている
+			this.parseAccelerometer(packet.data, 12),
+			this.parseAccelerometer(packet.data, 24),
+			this.parseAccelerometer(packet.data, 36)
 		};
 	}
 
-	private Vector3D toAccelerometer(byte[] data, int index) {
+	private Vector3D parseAccelerometer(byte[] data, int index) {
 		return new Vector3D(
 			this.toAcceleration(data, index),
 			this.toAcceleration(data, index + 2),
@@ -113,9 +117,10 @@ public class PacketDecorder {
 	 */
 	private EularAngleVelocity[] parseGyroscopes(Packet packet) {
 		return new EularAngleVelocity[] {
-			this.parseGyroscope(packet.data, 19),
-			this.parseGyroscope(packet.data, 31),
-			this.parseGyroscope(packet.data, 43)
+			// packet.data (: byte[]) は index 0 に report id を含めないため、上記 GitHub の表の値の1つ手前としている
+			this.parseGyroscope(packet.data, 18 - 1),
+			this.parseGyroscope(packet.data, 30 - 1),
+			this.parseGyroscope(packet.data, 42 - 1)
 		};
 	}
 
@@ -174,23 +179,29 @@ public class PacketDecorder {
 		double now = Instant.now().toEpochMilli() / 1000;
 		double dt = lt < 0 ? 0 : now - lt;
 
-		double norm = 1 / accelerometer.mag();
-		EularAngle temp = new EularAngle(
-			(1 - zeroBias) * lo.x + gyroscope.z * dt,
-			bias * (lo.y + gyroscope.x * dt) 
-				+ (1 - bias) * ((accelerometer.x * scale) * norm),
-			bias * (lo.z + gyroscope.y * dt) 
-				+ (1 - bias) * ((accelerometer.y * scale) * norm)
-		);
+		double norm = accelerometer.mag();
+		// x: gamma (roll), y: beta (pitch), z: alpha (yaw)
+		EularAngle temp = (norm == 0)
+			? lo
+			: new EularAngle(
+				bias           * (lo.x + gyroscope.y * dt) + (1 - bias) * ((accelerometer.y * scale) / norm),
+				bias           * (lo.y + gyroscope.x * dt) + (1 - bias) * ((accelerometer.x * scale) / norm),
+				(1 - zeroBias) * (lo.z + gyroscope.z * dt)
+			);
+			// : new EularAngle(
+			// 	bias           * (lo.x + (gyroscope.y + gyroscope.z) * dt) + (1 - bias) * (((accelerometer.y + accelerometer.z) * scale) / norm),
+			// 	bias           * (lo.y + (gyroscope.z + gyroscope.x) * dt) + (1 - bias) * (((accelerometer.z + accelerometer.x) * scale) / norm),
+			// 	(1 - zeroBias) * (lo.z + (gyroscope.x + gyroscope.y) * dt) + (1 - bias) * (((accelerometer.x + accelerometer.y) * scale) / norm)
+			// );
 
-		temp = new EularAngle(temp.x * mn, temp.y, temp.z)
-			.times(1 / Math.PI);
+		this.lastValue = new DecodeOrientationInfo(now, temp);
+		
+		EularAngle temp1 = new EularAngle(temp.x, temp.y, temp.z)
+			.times(180 / Math.PI);
 
 		EularAngle orientation = target.hand < 0
-			? new EularAngle(-temp.x % (1. / 4), -temp.y, -temp.z)
-			: new EularAngle(temp.x % 1., -temp.y, temp.z);
-
-		this.lastValue = new DecodeOrientationInfo(now, orientation);
+			? new EularAngle(-temp1.x, -temp1.y, -temp1.z)
+			: new EularAngle(temp1.x, -temp1.y, temp1.z);
 
 		return orientation;
 	}
