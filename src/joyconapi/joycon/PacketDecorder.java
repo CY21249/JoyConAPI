@@ -1,4 +1,4 @@
-package joyconapi;
+package joyconapi.joycon;
 
 
 import java.time.*;

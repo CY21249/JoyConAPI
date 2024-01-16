@@ -1,9 +1,9 @@
 package test;
 
-import joyconapi.*;
+import joyconapi.joycon.*;
 import joyconapi.util.*;
 
-public class Test {
+public class Test3 {
 	public static void main(String[] args) {
 		JoyCon left = JoyCon.searchLeft();
 

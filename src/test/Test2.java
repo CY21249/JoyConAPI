@@ -1,6 +1,6 @@
 package test;
 
-import joyconapi.*;
+import joyconapi.joycon.*;
 
 public class Test2 {
 	public static void main(String[] args) {

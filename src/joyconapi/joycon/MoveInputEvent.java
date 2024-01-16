@@ -1,4 +1,4 @@
-package joyconapi;
+package joyconapi.joycon;
 
 
 /** ジャイロ値が入力されたことを表すイベント */

@@ -1,11 +1,7 @@
-package joyconapi;
+package joyconapi.joycon;
 
 
 import joyconapi.angle.*;
-
-public class Gyroscopes {
-	
-}
 
 class Gyroscope {
 	public final EularAngle orientation;

@@ -1,4 +1,4 @@
-package joyconapi;
+package joyconapi.joycon;
 
 
 import joyconapi.event.EventListener;

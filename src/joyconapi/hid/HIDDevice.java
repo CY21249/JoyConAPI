@@ -7,6 +7,7 @@ import purejavahidapi.*;
 import joyconapi.hid.util.*;
 import joyconapi.util.*;
 
+/** HID (Human Interface Device) のデバイスを表すオブジェクト */
 public class HIDDevice {
 	private static final Map<String, HIDDevice> instances = new HashMap<>();
 
@@ -66,7 +67,7 @@ public class HIDDevice {
 	}
 
 	/** pure (PureJavaHidApi の HidDevice) から HIDDevice インスタンスを作成する */
-	static HIDDevice from(HidDevice pure) {
+	public static HIDDevice from(HidDevice pure) {
 		String id = pure.getHidDeviceInfo().getDeviceId();
 		HIDDevice instance = instances.get(id);
 		if (instance != null)
@@ -81,7 +82,8 @@ public class HIDDevice {
 	/** デバイスを検索する */
 	public static HIDDeviceInfo search(short vendorID, short productID) {
 		final List<HidDeviceInfo> list = PureJavaHidApi.enumerateDevices();
-		System.out.println("\nHIDデバイス " 
+		Debugger.common.log("HIDDevice",
+			"HIDデバイス " 
 				+ "0x" + StringUtil.padStart(HexUtil.toString(vendorID), 4, '0')
 				+ "/0x" + StringUtil.padStart(HexUtil.toString(productID), 4, '0')
 				+ " を探しています...\n");
@@ -95,13 +97,11 @@ public class HIDDevice {
 		}
 
 		if (deviceInfo != null) {
-			System.out.println("デバイスが見つかりました:");
-			PureHidApiUtil.printDeviceInfo(deviceInfo);
-			System.out.println();
-			
+			Debugger.common.log("HIDDevice", "デバイスが見つかりました:\n", 
+				PureHidApiUtil.toString(deviceInfo), "\n");
 			return HIDDeviceInfo.from(deviceInfo);
 		} else {
-			System.out.println("デバイスが見つかりませんでした");
+			Debugger.common.log("HIDDevice", "デバイスが見つかりませんでした\n");
 			return null;
 		}
 	}
@@ -111,13 +111,12 @@ public class HIDDevice {
 		try {
 			// throws IOException
 			HidDevice device = PureJavaHidApi.openDevice(info.pure);
-			System.out.println("デバイス " + info.productName + " に接続しました");
+			Debugger.common.log("HIDDevice", "デバイス " + info.productName + " に接続しました");
 
 			return HIDDevice.from(device);
 		} catch (IOException ioe) {
-			System.out.println("デバイスに接続できませんでした");
+			Debugger.common.log("HIDDevice", "デバイスに接続できませんでした");
 			return null;
 		}
 	}
-
 }
