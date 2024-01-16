@@ -6,7 +6,7 @@ JoyConAPI は、Bluetooth 接続した Joy-Con のデータを Java で利用し
 
 ## Installation
 
-GitHub の [本レポジトリ]() の [JoyConAPI の Jar アーカイブファイル](https://github.com/CY21249/JoyConAPI/blob/main/JoyConAPI.jar) より Jar ファイルをダウンロードし、任意の Java プロジェクトで参照ライブラリとして利用してください。
+GitHub の [本レポジトリ](https://github.com/CY21249/JoyConAPI) の [JoyConAPI の Jar アーカイブファイル](https://github.com/CY21249/JoyConAPI/blob/main/JoyConAPI.jar) より Jar ファイルをダウンロードし、任意の Java プロジェクトで参照ライブラリとして利用してください。
 
 例: プロジェクトのディレクトリに lib ディレクトリを作成し、Jar ファイルを格納
 
