@@ -56,7 +56,7 @@ public class HIDDevice {
 			public void onInputReport(HidDevice tgt, byte ids, byte[] data, int length) {
 				HIDDevice target = HIDDevice.from(tgt);
 				// イベントを作成する
-				ReceivedPacketEvent event = new ReceivedPacketEvent(target, ids, data, length);
+				PacketReceivedEvent event = new PacketReceivedEvent(target, ids, data, length);
 				// 登録している全てのリスナについて
 				for (HIDEventListener listener : target.eventListeners) {
 					// イベントを発行する

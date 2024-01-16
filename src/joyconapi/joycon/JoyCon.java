@@ -67,7 +67,7 @@ public class JoyCon {
 
 		this.hid.addEventListener(new HIDEventListener() {
 			@Override
-			public void onInputReport(ReceivedPacketEvent irEvent) {
+			public void onInputReport(PacketReceivedEvent irEvent) {
 				JoyCon target = JoyCon.from(irEvent.target);
 				// パケットのデータをデコード
 				Packet packet = irEvent.data;
