@@ -14,7 +14,7 @@ import joyconapi.util.*;
 
 public class TestMain {
     public static void main(String[] args) throws InterruptedException {
-        Debugger.common.activate();
+        Debugger.common.inactivate();
 
         Test2.main(args);
         for (int i = 5; i > 0; i--) {
