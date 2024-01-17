@@ -22,7 +22,7 @@ class JoyConSample {
 }
 ```
 
-## package 構成
+## 主な package 構成
 
 - joyconapi
   - joycon
