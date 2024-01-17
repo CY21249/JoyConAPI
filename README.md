@@ -4,18 +4,41 @@ JoyConAPI は、Bluetooth 接続した Joy-Con のデータを Java で利用し
 
 ※ 現在、姿勢角 (Orientation)，各速度 (Angle Velocity)，加速度 (Accelerometer) のみサポートしています
 
-## Installation
+## 導入
 
 GitHub の [本レポジトリ](https://github.com/CY21249/JoyConAPI) の [JoyConAPI の Jar アーカイブファイル](https://github.com/CY21249/JoyConAPI/blob/main/JoyConAPI.jar) より Jar ファイルをダウンロードし、任意の Java プロジェクトで参照ライブラリとして利用してください。
 
 例: プロジェクトのディレクトリに lib ディレクトリを作成し、Jar ファイルを格納
 
-## Usage
+その後、本ライブラリを使用したいクラスファイル等でインポート
+
+```java
+import joyconapi.joycon.JoyCon;
+
+class JoyConSample {
+  public static void main(String[] args) {
+    JoyCon joyCon = JoyCon.searchLeft();
+  }
+}
+```
+
+## package 構成
+
+- joyconapi
+  - joycon
+    - JoyCon
+    - JoyConEvent
+  - hid
+    - HIDDevice
+  - util
+    - Debugger
+
+## 使用方法
 
 ### Joy-Con に接続する
 
 ```java
-import joyconapi.joycon.JoyCon;
+
 
 class JoyConAPITest {
   void main() {
